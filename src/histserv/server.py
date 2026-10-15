@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from datetime import timedelta
-import logging
 from pathlib import Path
 
 import grpc
@@ -102,14 +102,25 @@ class Server:
         ]
 
         if self.options.dashboard_port is not None:
-            self._callbacks.append(
-                asyncio.create_task(
-                    self._start_dashboard(self.options.dashboard_port),
-                    name="dashboard",
-                )
+            dashboard = asyncio.create_task(
+                self._start_dashboard(self.options.dashboard_port),
+                name="dashboard",
             )
+            dashboard.add_done_callback(self._dashboard_done)
+            self._callbacks.append(dashboard)
 
         self._started = True
+
+    @staticmethod
+    def _dashboard_done(task: asyncio.Task[None]) -> None:
+        if task.cancelled():
+            return
+        error = task.exception()
+        if error is not None:
+            logging.getLogger(__name__).error(
+                "Dashboard task failed",
+                exc_info=(type(error), error, error.__traceback__),
+            )
 
     async def _start_dashboard(self, port: int) -> None:
         import uvicorn
