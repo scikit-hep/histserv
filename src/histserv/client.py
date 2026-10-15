@@ -125,6 +125,7 @@ class Client:
         self,
         hist: Hist | ChunkedHist,
         *,
+        hist_id: str | None = None,
         token: str | None = None,
         timeout: int = 10,
         compression: FillCompression | None = None,
@@ -133,6 +134,8 @@ class Client:
 
         Args:
             hist: Local `hist.Hist` or `ChunkedHist` to upload.
+            hist_id: Optional server-side histogram identifier. When omitted,
+                the server generates a UUIDv4 identifier.
             token: Optional access token associated with the histogram.
             timeout: RPC timeout in seconds.
             compression: Optional dense payload compression for this RPC.
@@ -161,8 +164,11 @@ class Client:
             chunked,
             codec=compression,
         )
+        request = hist_pb2.InitRequest(payload=payload)
+        if hist_id is not None:
+            request.hist_id = hist_id
         response = self.stub.Init(
-            hist_pb2.InitRequest(payload=payload),
+            request,
             timeout=timeout,
             metadata=self._metadata(token),
         )

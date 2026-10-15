@@ -36,6 +36,7 @@ message ChunkedHistPayload {
 
 message InitRequest {
   ChunkedHistPayload payload = 1;
+  optional string hist_id = 2;
 }
 
 message InitResponse {

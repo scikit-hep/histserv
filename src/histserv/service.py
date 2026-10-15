@@ -314,7 +314,7 @@ class Histogrammer(hist_pb2_grpc.HistogrammerServiceServicer):
         request_token = self._request_token(context)
         self._rpc_started(RPC_INIT, request_token)
         try:
-            hist_id = uuid.uuid4().hex
+            hist_id = request.hist_id or uuid.uuid4().hex
             fmt_rpc_msg = partial(
                 fmt_rpc_logger_msg, rpc_method=RPC_INIT, hist_id=hist_id
             )

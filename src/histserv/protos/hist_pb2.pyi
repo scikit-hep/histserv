@@ -47,11 +47,15 @@ class ChunkedHistPayload(_message.Message):
     ) -> None: ...
 
 class InitRequest(_message.Message):
-    __slots__ = ("payload",)
+    __slots__ = ("payload", "hist_id")
     PAYLOAD_FIELD_NUMBER: _ClassVar[int]
+    HIST_ID_FIELD_NUMBER: _ClassVar[int]
     payload: ChunkedHistPayload
+    hist_id: str
     def __init__(
-        self, payload: _Optional[_Union[ChunkedHistPayload, _Mapping]] = ...
+        self,
+        payload: _Optional[_Union[ChunkedHistPayload, _Mapping]] = ...,
+        hist_id: _Optional[str] = ...,
     ) -> None: ...
 
 class InitResponse(_message.Message):

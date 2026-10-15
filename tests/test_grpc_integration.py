@@ -73,6 +73,17 @@ def _assert_hist_views_match(actual: np.ndarray, expected: np.ndarray) -> None:
         np.testing.assert_allclose(actual[field_name], expected[field_name])
 
 
+def test_init_accepts_explicit_hist_id(client: Client) -> None:
+    remote_hist = client.init(
+        regular_hist(),
+        hist_id="my-histogram",
+        token="alice",
+    )
+
+    assert remote_hist.hist_id == "my-histogram"
+    assert remote_hist.exists() is True
+
+
 def test_remote_fill_matches_local_hist_for_regular_axes(client: Client) -> None:
     local_hist = regular_hist()
     remote_hist = client.init(regular_hist(), token="alice")
